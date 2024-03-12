@@ -1,9 +1,13 @@
 package br.gov.mt.sesp.service;
 
+import br.gov.mt.sesp.dto.pessoa.PessoaRequest;
 import br.gov.mt.sesp.dto.pessoa.PessoaResponse;
 import br.gov.mt.sesp.mapper.PessoaMapper;
+import br.gov.mt.sesp.model.Pessoa;
 import br.gov.mt.sesp.repository.PessoaRepository;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
+import jakarta.ws.rs.NotFoundException;
 
 import java.util.List;
 
@@ -20,5 +24,34 @@ public class PessoaService {
 
     public List<PessoaResponse> listar() {
         return repository.findAll().stream().map(mapper::toResponse).toList();
+    }
+
+    public PessoaResponse porId(Long id) {
+        return mapper.toResponse(buscar(id));
+    }
+
+    @Transactional
+    public PessoaResponse criar(PessoaRequest request) {
+        var pessoa = mapper.toModel(request);
+        repository.persist(pessoa);
+        return mapper.toResponse(pessoa);
+    }
+
+    @Transactional
+    public void atualizar(Long id, PessoaRequest request) {
+        var pessoa = buscar(id);
+        mapper.update(request, pessoa);
+        repository.persist(pessoa);
+    }
+
+    @Transactional
+    public void deletar(Long id) {
+        var pessoa = buscar(id);
+        repository.delete(pessoa);
+    }
+
+    private Pessoa buscar(Long id) {
+        return repository.findByIdOptional(id)
+                .orElseThrow(() -> new NotFoundException("pessoa não encontrada"));
     }
 }

@@ -1,9 +1,10 @@
 package br.gov.mt.sesp.resource;
 
+import br.gov.mt.sesp.dto.pessoa.PessoaRequest;
 import br.gov.mt.sesp.dto.pessoa.PessoaResponse;
 import br.gov.mt.sesp.service.PessoaService;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Response;
 
 import java.util.List;
 
@@ -19,5 +20,30 @@ public class PessoaResource {
     @GET
     public List<PessoaResponse> listar() {
         return service.listar();
+    }
+
+    @GET
+    @Path("/{id}")
+    public PessoaResponse porId(@PathParam("id") Long id) {
+        return service.porId(id);
+    }
+
+    @POST
+    public Response criar(PessoaRequest request) {
+        return Response.created(null)
+                .entity(service.criar(request))
+                .build();
+    }
+
+    @PUT
+    @Path("/{id}")
+    public void atualizar(@PathParam("id") Long id, PessoaRequest request) {
+        service.atualizar(id, request);
+    }
+
+    @DELETE
+    @Path("/{id}")
+    public void deletar(@PathParam("id") Long id) {
+        service.deletar(id);
     }
 }
