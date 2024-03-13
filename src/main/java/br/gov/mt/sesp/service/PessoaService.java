@@ -50,6 +50,18 @@ public class PessoaService {
         repository.delete(pessoa);
     }
 
+    public List<PessoaResponse> pesquisarPorNome(String nome) {
+        var parametroNome = "%".concat(nome.toUpperCase()).concat("%");
+        return repository.find("upper(nome) like ?1", parametroNome)
+                .stream().map(mapper::toResponse).toList();
+    }
+
+    public PessoaResponse pesquisarPorCpf(String cpf) {
+        var pessoa = repository.find("cpf = ?1", cpf).singleResultOptional()
+                .orElseThrow(() -> new NotFoundException("pessoa com esse CPF não encontrada"));
+        return mapper.toResponse(pessoa);
+    }
+
     private Pessoa buscar(Long id) {
         return repository.findByIdOptional(id)
                 .orElseThrow(() -> new NotFoundException("pessoa não encontrada"));

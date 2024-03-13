@@ -46,4 +46,16 @@ public class PessoaResource {
     public void deletar(@PathParam("id") Long id) {
         service.deletar(id);
     }
+
+    @GET
+    @Path("/por-nome")
+    public List<PessoaResponse> pesquisarPorNome(@QueryParam("nome") @DefaultValue("") String nome) {
+        return service.pesquisarPorNome(nome);
+    }
+
+    @GET
+    @Path("/por-cpf")
+    public PessoaResponse pesquisarPorCpf(@QueryParam("cpf") @DefaultValue("") String cpf) {
+        return service.pesquisarPorCpf(cpf);
+    }
 }
