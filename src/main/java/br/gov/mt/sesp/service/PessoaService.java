@@ -1,15 +1,19 @@
 package br.gov.mt.sesp.service;
 
+import br.gov.mt.sesp.dto.pessoa.PessoaPesquisaRequest;
 import br.gov.mt.sesp.dto.pessoa.PessoaRequest;
 import br.gov.mt.sesp.dto.pessoa.PessoaResponse;
 import br.gov.mt.sesp.mapper.PessoaMapper;
 import br.gov.mt.sesp.model.Pessoa;
 import br.gov.mt.sesp.repository.PessoaRepository;
+import io.quarkus.panache.common.Parameters;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @ApplicationScoped
 public class PessoaService {
@@ -65,5 +69,26 @@ public class PessoaService {
     private Pessoa buscar(Long id) {
         return repository.findByIdOptional(id)
                 .orElseThrow(() -> new NotFoundException("pessoa não encontrada"));
+    }
+
+    public List<PessoaResponse> pesquisar(PessoaPesquisaRequest request) {
+        var arrayList = new ArrayList<String>();
+        var parameters = new Parameters();
+        if (!request.getNome().isEmpty()) {
+            var parametroNome = "%".concat(request.getNome().toUpperCase()).concat("%");
+            arrayList.add(" upper(nome) like :nome ");
+            parameters.and("nome", parametroNome);
+        }
+        if (!request.getCpf().isEmpty()) {
+            arrayList.add(" cpf = :cpf ");
+            parameters.and("cpf", request.getCpf());
+        }
+        if (Objects.nonNull(request.getNascimento())) {
+            arrayList.add(" nascimento = :nascimento ");
+            parameters.and("nascimento", request.getNascimento());
+        }
+        var query = String.join(" or ", arrayList);
+        return repository.find(query, parameters)
+                .stream().map(mapper::toResponse).toList();
     }
 }

@@ -1,5 +1,6 @@
 package br.gov.mt.sesp.resource;
 
+import br.gov.mt.sesp.dto.pessoa.PessoaPesquisaRequest;
 import br.gov.mt.sesp.dto.pessoa.PessoaRequest;
 import br.gov.mt.sesp.dto.pessoa.PessoaResponse;
 import br.gov.mt.sesp.service.PessoaService;
@@ -57,5 +58,11 @@ public class PessoaResource {
     @Path("/por-cpf")
     public PessoaResponse pesquisarPorCpf(@QueryParam("cpf") @DefaultValue("") String cpf) {
         return service.pesquisarPorCpf(cpf);
+    }
+
+    @GET
+    @Path("/pesquisar")
+    public List<PessoaResponse> pesquisar(@BeanParam PessoaPesquisaRequest request) {
+        return service.pesquisar(request);
     }
 }
