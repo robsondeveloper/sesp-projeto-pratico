@@ -1,9 +1,9 @@
 package br.gov.mt.sesp.lifecycle;
 
-import br.gov.mt.sesp.dto.endereco.EnderecoRequest;
-import br.gov.mt.sesp.dto.pessoa.PessoaRequest;
 import br.gov.mt.sesp.mapper.EnderecoMapper;
 import br.gov.mt.sesp.mapper.PessoaMapper;
+import br.gov.mt.sesp.model.Endereco;
+import br.gov.mt.sesp.model.Pessoa;
 import br.gov.mt.sesp.repository.EnderecoRepository;
 import br.gov.mt.sesp.repository.PessoaRepository;
 import io.quarkus.runtime.ShutdownEvent;
@@ -37,24 +37,30 @@ public class AppLifecycleBean {
     @Transactional
     void onStart(@Observes StartupEvent ev) {
         logger.info("The application is starting...");
-        PessoaRequest request = new PessoaRequest();
-        request.setNome("kratos");
-        request.setCpf("87707873017");
-        request.setMae("mae");
-        request.setNascimento(LocalDate.of(1990, Month.JANUARY, 30));
-        request.setTelefone("65912345678");
-        var pessoa = pessoaMapper.toModel(request);
+        Pessoa pessoa = new Pessoa();
+        pessoa.setNome("kratos");
+        pessoa.setCpf("87707873017");
+        pessoa.setMae("mae");
+        pessoa.setNascimento(LocalDate.of(1980, Month.JANUARY, 30));
+        pessoa.setTelefone("65912345678");
         pessoaRepository.persist(pessoa);
 
-        EnderecoRequest enderecoRequest = new EnderecoRequest();
-        enderecoRequest.setBairro("pedregal");
-        enderecoRequest.setCep("78068-987");
-        enderecoRequest.setCidade("Cuiabá");
-        enderecoRequest.setEstado("MT");
-        enderecoRequest.setNumero(123);
-        enderecoRequest.setPessoaId(pessoa.getId());
-        var endereco = enderecoMapper.toModel(enderecoRequest);
+        Endereco endereco = new Endereco();
+        endereco.setBairro("pedregal");
+        endereco.setCep("78068-987");
+        endereco.setCidade("Cuiabá");
+        endereco.setEstado("MT");
+        endereco.setNumero(123);
+        endereco.setPessoa(pessoa);
         enderecoRepository.persist(endereco);
+
+        Pessoa atreus = new Pessoa();
+        atreus.setNome("Atreus");
+        atreus.setCpf("53266142004");
+        atreus.setMae("Laufey");
+        atreus.setNascimento(LocalDate.of(2008, Month.MARCH, 20));
+        atreus.setTelefone("65955446688");
+        pessoaRepository.persist(atreus);
     }
 
     void onStop(@Observes ShutdownEvent ev) {
