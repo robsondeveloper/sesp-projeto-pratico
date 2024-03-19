@@ -50,6 +50,11 @@ public class EnderecoService {
         repository.delete(endereco);
     }
 
+    public List<EnderecoResponse> pesquisarPorCidadeEstado(String cidade, String estado) {
+        return repository.find("cidade = ?1 and estado = ?2", cidade, estado)
+                .stream().map(mapper::toResponse).toList();
+    }
+
     private Endereco buscar(Long id) {
         return repository.findByIdOptional(id)
                 .orElseThrow(() -> new NotFoundException("endereço não encontrado"));

@@ -3,6 +3,8 @@ package br.gov.mt.sesp.resource;
 import br.gov.mt.sesp.dto.endereco.EnderecoRequest;
 import br.gov.mt.sesp.dto.endereco.EnderecoResponse;
 import br.gov.mt.sesp.service.EnderecoService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 
@@ -45,5 +47,12 @@ public class EnderecoResource {
     @Path("/{id}")
     public void deletar(@PathParam("id") Long id) {
         service.deletar(id);
+    }
+
+    @GET
+    @Path("/por-cidade-estado")
+    public List<EnderecoResponse> pesquisarPorCidadeEstado(@Valid @NotBlank @QueryParam("cidade") String cidade,
+                                                           @Valid @NotBlank @QueryParam("estado") String estado) {
+        return service.pesquisarPorCidadeEstado(cidade, estado);
     }
 }
